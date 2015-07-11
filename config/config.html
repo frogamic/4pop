@@ -1,0 +1,193 @@
+<html><head>
+        <title>4pop settings page</title>
+        <style type="text/css">
+            #colorpicker {
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                overflow: scroll;
+            }
+            .extitem {
+                width: 50vw;
+                display: inline-block;
+                text-align: center;
+            }
+            .coloritem {
+                width: 25vw;
+                height: 25vw;
+                display: inline-block;
+            }
+            button {
+                width: 45%;
+                height: 50;
+            }
+            body {
+                text-align: center;
+            }
+        </style>
+        <script>
+            var nColors = 64;
+            var nExt = 2;
+            var colors = ["#000", "#005", "#00a", "#00f", "#050", "#055", "#05a", "#05f", "#0a0", "#0a5", "#0aa", "#0af", "#0f0", "#0f5", "#0fa", "#0ff", "#500", "#505", "#50a", "#50f", "#550", "#555", "#55a", "#55f", "#5a0", "#5a5", "#5aa", "#5af", "#5f0", "#5f5", "#5fa", "#5ff", "#a00", "#a05", "#a0a", "#a0f", "#a50", "#a55", "#a5a", "#a5f", "#aa0", "#aa5", "#aaa", "#aaf", "#af0", "#af5", "#afa", "#aff", "#f00", "#f05", "#f0a", "#f0f", "#f50", "#f55", "#f5a", "#f5f", "#fa0", "#fa5", "#faa", "#faf", "#ff0", "#ff5", "#ffa", "#fff", "bluetooth", "battery"];
+            var settings = INSERT_SETTINGS_HERE;
+            var chosenColor;
+            var extitems = [];
+            var colorpicker = document.createElement("div");
+            colorpicker.id = 'colorpicker';
+            colorpicker.style.display = 'none';
+            for (var i = 0; i < nColors + nExt; i++)
+            {
+                var colorbox = document.createElement("div");
+                colorbox.style.background = colors[i];
+                colorbox.id = colors[i].replace("#", "c_");
+                if (i >= nColors){
+                    extitems.push(colorbox);
+                    colorbox.setAttribute("class", "extitem");
+                    colorbox.innerHTML="<h3>"+colors[i]+"</h3>";
+                    colorbox.style.background = "White";
+                } else {
+                    colorbox.style.background = colors[i];
+                    colorbox.setAttribute("class", "coloritem");
+                }
+                colorbox.onclick = select_color;
+                colorpicker.appendChild(colorbox);
+            }
+            function hide_extitems() {
+                extitems[0].style.display="none";
+                extitems[1].style.display="none";
+            }
+            function show_extitems() {
+                extitems[0].style.display="inline-block";
+                extitems[1].style.display="inline-block";
+            }
+            function show_popup() {
+                if (this.id.charAt(2) === 'h')
+                    hide_extitems();
+                else
+                    show_extitems();
+                chosenColor = this.id;
+                colorpicker.style.display = 'block';
+            }
+            function send_settings() {
+                settings.vibe = document.getElementById("vibe").checked;
+                document.location = "pebblejs://close#" + encodeURIComponent(JSON.stringify(settings));
+            }
+            function select_color() {
+                settings[chosenColor] = this.id.replace("c_", "#");
+                var canvas = document.getElementById(chosenColor);
+                canvas.c = settings[chosenColor];
+                draw_canvas(canvas);
+                colorpicker.style.display = 'none';
+            }
+            function draw_canvas(canvas) {
+                var ctx = canvas.getContext("2d");
+                var cy = canvas.height * (canvas.id.charAt(0) == 't' ? .25 : .75);
+                var cx = canvas.width * (canvas.id.charAt(1) == 'l' ? .25 : .75);
+                ctx.fillStyle = "DimGray";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = "Black";
+                ctx.beginPath();
+                ctx.moveTo(0, canvas.height/2);
+                ctx.lineTo(canvas.width, canvas.height/2);
+                ctx.moveTo(canvas.width/2, 0);
+                ctx.lineTo(canvas.width/2, canvas.height);
+                ctx.stroke();
+                ctx.lineCap = ctx.lineJoin = "round";
+                var b = 1;
+                var c = [canvas.c];
+                if(canvas.c === "battery") {
+                    b = 3;
+                    c = ["#f00", "#fa0", "#0f0"];
+                } else if(canvas.c === "bluetooth") {
+                    b = 2;
+                    c = ["#005", "#a00"];
+                }
+                switch (canvas.id.charAt(2)){
+                    case 'b':
+                        var y = cy - canvas.height/4;
+                        var h = canvas.height/2;
+                        var x = cx - canvas.width/4;
+                        var w = canvas.width/2;
+                        for (var i = 0; i < b; i++) {
+                            ctx.fillStyle = c[i];
+                            ctx.fillRect(x + i * w/b , y, w/b, h);
+                        }
+                    break;
+                    case 'd':
+                        ctx.shadowBlur = 0;
+                        ctx.shadowOffsetY = 2;
+                        ctx.shadowOffsetX = -2;
+                        ctx.shadowColor="black";
+                        ctx.lineWidth = canvas.width / 20;
+                        for (var i = 0; i < b; i++) {
+                            ctx.beginPath();
+                            ctx.strokeStyle=c[i];
+                            ctx.arc(cx, cy, canvas.width / 5, i*(2*Math.PI/b), (i+1)*(2*Math.PI/b));
+                            ctx.stroke();
+                        }
+                    break;
+                    case 'h':
+                        ctx.strokeStyle = canvas.c;
+                        ctx.shadowBlur = 0;
+                        ctx.shadowOffsetY = 2;
+                        ctx.shadowOffsetX = 2;
+                        ctx.shadowColor="black";
+                        ctx.lineWidth = canvas.width / 30;
+                        ctx.beginPath();
+                        ctx.moveTo(cx - canvas.width / 10, cy - canvas.width / 8);
+                        ctx.lineTo(cx, cy);
+                        ctx.lineTo(cx + canvas.width / 5, cy - canvas.width / 18);
+                        ctx.stroke();
+                }
+            }
+            window.onload = function() {
+                document.body.appendChild(colorpicker);
+                for (var id in settings) {
+                    var i = document.getElementById(id);
+                    if (id === "vibe") {
+                        i.checked = settings[id];
+                    }else{
+                        i.c = settings[id];
+                        i.width = window.innerWidth * .3;
+                        i.height = window.innerWidth * .35;
+                        i.onclick = show_popup;
+                        draw_canvas(i);
+                    }
+                }
+            };
+        </script>
+    </head>
+    <body>
+        <p>
+            <canvas id="tlb"></canvas>
+            <canvas id="tld"></canvas>
+            <canvas id="tlh"></canvas>
+        </p>
+        <p>
+            <canvas id="trb"></canvas>
+            <canvas id="trd"></canvas>
+            <canvas id="trh"></canvas>
+        </p>
+        <p>
+            <canvas id="blb"></canvas>
+            <canvas id="bld"></canvas>
+            <canvas id="blh"></canvas>
+        </p>
+        <p>
+            <canvas id="brb"></canvas>
+            <canvas id="brd"></canvas>
+            <canvas id="brh"></canvas>
+        </p>
+        <p>
+            <input type="checkbox" id="vibe">Vibrate on bluetooth disconnect</input>
+        </p>
+        <p>
+            <button type="submit" onclick="send_settings();">Save</button>
+            <button type="cancel" onclick="document.location = 'pebblejs://close#cancel'">Cancel</button>
+        </p>
+        4pop version INSERT_VERSION_HERE
+    </body>
+</html>

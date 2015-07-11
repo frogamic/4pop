@@ -1,0 +1,31 @@
+{
+  "uuid": "34624378-9ddd-44d0-a3be-80adcf8c045b",
+  "shortName": "4pop",
+  "longName": "4pop",
+  "companyName": "frogamic",
+  "versionLabel": "0.5",
+  "sdkVersion": "3",
+  "targetPlatforms": ["basalt"],
+  "capabilities": ["configurable"],
+  "watchapp": {
+    "watchface": true
+  },
+  "appKeys": {
+      "tlb": 0,
+      "trb": 1,
+      "blb": 2,
+      "brb": 3,
+      "tld": 4,
+      "trd": 5,
+      "bld": 6,
+      "brd": 7,
+      "tlh": 8,
+      "trh": 9,
+      "blh": 10,
+      "brh": 11,
+      "vibe": 12
+  },
+  "resources": {
+    "media": []
+  }
+}
