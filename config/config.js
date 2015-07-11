@@ -20,6 +20,7 @@ function replace_colors(config) {
 }
 
 Pebble.addEventListener('ready', function() {
+    // window.localStorage.removeItem("config_4pop");
     var config = JSON.parse(window.localStorage.getItem("config_4pop"));
     if (config) {
         var changed = false;
@@ -44,10 +45,11 @@ Pebble.addEventListener('showConfiguration', function () {
 Pebble.addEventListener('webviewclosed', function(e) {
     if (e.response !== "cancel") {
         var config = JSON.parse(decodeURIComponent(e.response));
+        config.vibe = (config.vibe) ? 1 : 0;
         window.localStorage.setItem("config_4pop", e.response);
         replace_colors(config);
-        console.log("Sending "+JSON.stringify(config));
-        pebble.sendAppMessage(config);
+        Pebble.sendAppMessage(config);
+        console.log(JSON.stringify(config));
     }
 });
 

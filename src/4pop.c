@@ -12,9 +12,8 @@
 #define GColorBluetoothARGB8 0
 #define GColorBatteryARGB8 1
 
-enum{TLB_KEY = 0x0, TRB_KEY = 0x1, BLB_KEY = 0x2, BRB_KEY = 0x3, 
-TLD_KEY = 0x4, TRD_KEY = 0x5, BLD_KEY = 0x6, BRD_KEY = 0x7, 
-TLH_KEY = 0x8, TRH_KEY = 0x9, BLH_KEY = 0xa, BRH_KEY = 0xb, VIBE_KEY = 0xc};
+enum{TLB_KEY, TRB_KEY, BLB_KEY, BRB_KEY, TLD_KEY, TRD_KEY,
+    BLD_KEY, BRD_KEY, TLH_KEY, TRH_KEY, BLH_KEY, BRH_KEY, VIBE_KEY};
 enum{PANEL, DIAL, HANDS};
 enum{BATTERY_MID_AMOUNT=50, BATTERY_LOW_AMOUNT=20};
 enum{BATTERY_LOW_COLOR = GColorRedARGB8,
@@ -52,36 +51,31 @@ static void appsync_handler(const uint32_t key, const Tuple *new, const Tuple* o
 }
 
 static void settings_init() {
-    uint32_t val[NUM_SETTINGS];
     for (int i = 0; i < NUM_SETTINGS; i++) {
         if (persist_exists(i)){
-            val[i] = persist_read_int(i);
-            APP_LOG(APP_LOG_LEVEL_DEBUG, "%i loaded from storage", i);
-        }
-        else {
-            val[i] = g_config[i];
-            APP_LOG(APP_LOG_LEVEL_DEBUG, "%i loaded from defaults", i);
+            g_config[i] = persist_read_int(i);
         }
     }
-    Tuplet config[] = {TupletInteger(TLB_KEY, val[TLB_KEY]),
-        TupletInteger(TRB_KEY, val[TRB_KEY]),
-        TupletInteger(BLB_KEY, val[BLB_KEY]),
-        TupletInteger(BRB_KEY, val[BRB_KEY]),
-        TupletInteger(TLD_KEY, val[TLD_KEY]),
-        TupletInteger(TRD_KEY, val[TRD_KEY]),
-        TupletInteger(BLD_KEY, val[BLD_KEY]),
-        TupletInteger(BRD_KEY, val[BRD_KEY]),
-        TupletInteger(TLH_KEY, val[TLH_KEY]),
-        TupletInteger(TRH_KEY, val[TRH_KEY]),
-        TupletInteger(BLH_KEY, val[BLH_KEY]),
-        TupletInteger(BRH_KEY, val[BRH_KEY]),
-        TupletInteger(VIBE_KEY, val[VIBE_KEY])};
+    Tuplet config[] = {TupletInteger(TLB_KEY, g_config[TLB_KEY]),
+        TupletInteger(TRB_KEY, g_config[TRB_KEY]),
+        TupletInteger(BLB_KEY, g_config[BLB_KEY]),
+        TupletInteger(BRB_KEY, g_config[BRB_KEY]),
+        TupletInteger(TLD_KEY, g_config[TLD_KEY]),
+        TupletInteger(TRD_KEY, g_config[TRD_KEY]),
+        TupletInteger(BLD_KEY, g_config[BLD_KEY]),
+        TupletInteger(BRD_KEY, g_config[BRD_KEY]),
+        TupletInteger(TLH_KEY, g_config[TLH_KEY]),
+        TupletInteger(TRH_KEY, g_config[TRH_KEY]),
+        TupletInteger(BLH_KEY, g_config[BLH_KEY]),
+        TupletInteger(BRH_KEY, g_config[BRH_KEY]),
+        TupletInteger(VIBE_KEY, g_config[VIBE_KEY])};
     int buffersize = dict_calc_buffer_size_from_tuplets(config, NUM_SETTINGS);
     sync_buffer = malloc(buffersize);
     if (sync_buffer)
         app_sync_init(&appsync, sync_buffer, buffersize, config, NUM_SETTINGS, appsync_handler, appsync_error, NULL);
     else
         APP_LOG(APP_LOG_LEVEL_ERROR, "Unable to malloc appsync buffer");
+    app_message_open(buffersize, 64);
 }
 
 static void battery_handler(BatteryChargeState b) {
