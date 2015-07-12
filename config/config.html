@@ -13,12 +13,24 @@
                 width: 50vw;
                 display: inline-block;
                 text-align: center;
+                color: White;
+                text-shadow:
+                    -1px -1px 0 Black,  
+                    1px -1px 0 Black,
+                    -1px 1px 0 Black,
+                    1px 1px 0 Black;
             }
             #cc {
                 width:100vw;
                 display: inline-block;
                 text-align: center;
                 background: White;
+            }
+            #bluetooth {
+                background: linear-gradient(to right, #005, #a00);
+            }
+            #battery {
+                background: linear-gradient(to right, #f00, #fa0, #0f0);
             }
             .coloritem {
                 width: 25vw;
@@ -52,7 +64,6 @@
                     extitems.push(colorbox);
                     colorbox.setAttribute("class", "extitem");
                     colorbox.innerHTML="<h3>"+colors[i]+"</h3>";
-                    colorbox.style.background = "White";
                 } else {
                     colorbox.style.background = colors[i];
                     colorbox.setAttribute("class", "coloritem");
