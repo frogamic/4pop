@@ -29,7 +29,7 @@ static uint8_t sync_buffer[SYNC_BUFFER_SIZE];
 static Window *window;
 static Layer *layer;
 static int hours, minutes, battery;
-static bool bluetooth, vibe;
+static bool bluetooth;
 static uint8_t g_config[] = {GColorBlueARGB8, GColorMagentaARGB8, GColorChromeYellowARGB8, GColorBluetoothARGB8, GColorOrangeARGB8, GColorYellowARGB8, GColorRedARGB8, GColorBatteryARGB8, GColorWhiteARGB8, GColorWhiteARGB8, GColorWhiteARGB8, GColorWhiteARGB8, 1};
 
 static inline GPoint get_point(int32_t angle, int length) {
@@ -81,7 +81,7 @@ static void battery_handler(BatteryChargeState b) {
 static void bluetooth_handler(bool connected) {
     bluetooth = connected;
     layer_mark_dirty(layer);
-    if (vibe && !connected)
+    if (g_config[VIBE_KEY] && !connected)
         vibes_double_pulse();
 }
 
