@@ -14,6 +14,12 @@
                 display: inline-block;
                 text-align: center;
             }
+            #cc {
+                width:100vw;
+                display: inline-block;
+                text-align: center;
+                background: White;
+            }
             .coloritem {
                 width: 25vw;
                 height: 25vw;
@@ -30,7 +36,7 @@
         <script>
             var nColors = 64;
             var nExt = 2;
-            var colors = ["#000", "#005", "#00a", "#00f", "#050", "#055", "#05a", "#05f", "#0a0", "#0a5", "#0aa", "#0af", "#0f0", "#0f5", "#0fa", "#0ff", "#500", "#505", "#50a", "#50f", "#550", "#555", "#55a", "#55f", "#5a0", "#5a5", "#5aa", "#5af", "#5f0", "#5f5", "#5fa", "#5ff", "#a00", "#a05", "#a0a", "#a0f", "#a50", "#a55", "#a5a", "#a5f", "#aa0", "#aa5", "#aaa", "#aaf", "#af0", "#af5", "#afa", "#aff", "#f00", "#f05", "#f0a", "#f0f", "#f50", "#f55", "#f5a", "#f5f", "#fa0", "#fa5", "#faa", "#faf", "#ff0", "#ff5", "#ffa", "#fff", "bluetooth", "battery"];
+            var colors = ["bluetooth", "battery", "#000", "#005", "#00a", "#00f", "#050", "#055", "#05a", "#05f", "#0a0", "#0a5", "#0aa", "#0af", "#0f0", "#0f5", "#0fa", "#0ff", "#500", "#505", "#50a", "#50f", "#550", "#555", "#55a", "#55f", "#5a0", "#5a5", "#5aa", "#5af", "#5f0", "#5f5", "#5fa", "#5ff", "#a00", "#a05", "#a0a", "#a0f", "#a50", "#a55", "#a5a", "#a5f", "#aa0", "#aa5", "#aaa", "#aaf", "#af0", "#af5", "#afa", "#aff", "#f00", "#f05", "#f0a", "#f0f", "#f50", "#f55", "#f5a", "#f5f", "#fa0", "#fa5", "#faa", "#faf", "#ff0", "#ff5", "#ffa", "#fff"];
             var settings = INSERT_SETTINGS_HERE;
             var chosenColor;
             var extitems = [];
@@ -42,7 +48,7 @@
                 var colorbox = document.createElement("div");
                 colorbox.style.background = colors[i];
                 colorbox.id = colors[i].replace("#", "c_");
-                if (i >= nColors){
+                if (i < nExt){
                     extitems.push(colorbox);
                     colorbox.setAttribute("class", "extitem");
                     colorbox.innerHTML="<h3>"+colors[i]+"</h3>";
@@ -54,6 +60,11 @@
                 colorbox.onclick = select_color;
                 colorpicker.appendChild(colorbox);
             }
+            var cancel = document.createElement("div");
+            cancel.id = "cc";
+            cancel.innerHTML="<h3>Cancel</h3>";
+            cancel.onclick = select_color;
+            colorpicker.appendChild(cancel);
             function hide_extitems() {
                 extitems[0].style.display="none";
                 extitems[1].style.display="none";
@@ -75,10 +86,12 @@
                 document.location = "pebblejs://close#" + encodeURIComponent(JSON.stringify(settings));
             }
             function select_color() {
-                settings[chosenColor] = this.id.replace("c_", "#");
-                var canvas = document.getElementById(chosenColor);
-                canvas.c = settings[chosenColor];
-                draw_canvas(canvas);
+                if (this.id !== "cc") {
+                    settings[chosenColor] = this.id.replace("c_", "#");
+                    var canvas = document.getElementById(chosenColor);
+                    canvas.c = settings[chosenColor];
+                    draw_canvas(canvas);
+                }
                 colorpicker.style.display = 'none';
             }
             function draw_canvas(canvas) {
