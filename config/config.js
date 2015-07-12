@@ -49,7 +49,6 @@ Pebble.addEventListener('webviewclosed', function(e) {
         window.localStorage.setItem("config_4pop", e.response);
         replace_colors(config);
         Pebble.sendAppMessage(config);
-        console.log(JSON.stringify(config));
     }
 });
 

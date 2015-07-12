@@ -9,6 +9,7 @@
 #define PANEL_HEIGHT 84
 #define NUM_SETTINGS 13
 #define SETTINGS_VERSION 0
+#define SYNC_BUFFER_SIZE 150
 #define GColorBluetoothARGB8 0
 #define GColorBatteryARGB8 1
 
@@ -24,7 +25,7 @@ enum{BATTERY_LOW_COLOR = GColorRedARGB8,
 };
 
 static AppSync appsync;
-static uint8_t *sync_buffer;
+static uint8_t sync_buffer[SYNC_BUFFER_SIZE];
 static Window *window;
 static Layer *layer;
 static int hours, minutes, battery;
@@ -43,7 +44,6 @@ static void appsync_error(DictionaryResult dict_error, AppMessageResult message_
 }
 
 static void appsync_handler(const uint32_t key, const Tuple *new, const Tuple* old, void* c) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "%ld changed to %ld", key, new->value->uint32);
     persist_write_int(key, new->value->uint32);
     g_config[key] = new->value->uint32;
     if (key != VIBE_KEY)
@@ -69,13 +69,8 @@ static void settings_init() {
         TupletInteger(BLH_KEY, g_config[BLH_KEY]),
         TupletInteger(BRH_KEY, g_config[BRH_KEY]),
         TupletInteger(VIBE_KEY, g_config[VIBE_KEY])};
-    int buffersize = dict_calc_buffer_size_from_tuplets(config, NUM_SETTINGS);
-    sync_buffer = malloc(buffersize);
-    if (sync_buffer)
-        app_sync_init(&appsync, sync_buffer, buffersize, config, NUM_SETTINGS, appsync_handler, appsync_error, NULL);
-    else
-        APP_LOG(APP_LOG_LEVEL_ERROR, "Unable to malloc appsync buffer");
-    app_message_open(buffersize, 64);
+    app_sync_init(&appsync, sync_buffer, SYNC_BUFFER_SIZE, config, NUM_SETTINGS, appsync_handler, appsync_error, NULL);
+    app_message_open(SYNC_BUFFER_SIZE, 64);
 }
 
 static void battery_handler(BatteryChargeState b) {
@@ -196,7 +191,6 @@ static void window_load(Window *window) {
 
 static void window_unload(Window *window) {
     app_sync_deinit(&appsync);
-    free(sync_buffer);
     battery_state_service_unsubscribe();
     bluetooth_connection_service_unsubscribe();
     tick_timer_service_unsubscribe();
