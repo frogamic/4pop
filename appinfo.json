@@ -3,7 +3,7 @@
   "shortName": "4pop",
   "longName": "4pop",
   "companyName": "frogamic",
-  "versionLabel": "0.5",
+  "versionLabel": "0.9",
   "sdkVersion": "3",
   "targetPlatforms": ["basalt"],
   "capabilities": ["configurable"],
