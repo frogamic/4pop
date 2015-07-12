@@ -40,7 +40,8 @@ def build(ctx):
     dest_js  = ctx.path.make_node('/src/js/pebble-js-app.js')
     src_html = ctx.path.make_node('/config/config.html')
     src_js   = ctx.path.make_node('/config/config.js')
-    ctx(rule='cd .. && config/generate_js.sh', source=[src_js, src_html], target=dest_js)
+    app_info = ctx.path.make_node('/appinfo.json')
+    ctx(rule='cd .. && config/generate_js.sh', source=[app_info, src_js, src_html], target=dest_js)
 
     ctx.set_group('bundle')
     ctx.pbl_bundle(binaries=binaries, js=ctx.path.ant_glob('src/js/**/*.js'))
