@@ -19,7 +19,7 @@ function replace_colors(config) {
 }
 
 Pebble.addEventListener('showConfiguration', function () {
-    Pebble.openURL('https://rawgit.com/frogamic/4pop/master/config/config.html?version=' + appinfo.versionLabel);
+    Pebble.openURL('https://cdn.rawgit.com/frogamic/4pop/v1.0/config/config.html?version=' + appinfo.versionLabel);
 });
 
 Pebble.addEventListener('webviewclosed', function(e) {
