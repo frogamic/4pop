@@ -1,4 +1,3 @@
-var defaults = {'tlb':'#00f','trb':'#f0f','blb':'#fa0','brb':'bluetooth','tld':'#f50','trd':'#ff0','bld':'#f00','brd':'battery','tlh':'#fff','trh':'#fff','blh':'#fff','brh':'#fff','vibe':1};
 
 function pcolor_from_hex(hex) {
     hex = hex.toLowerCase();
@@ -19,27 +18,8 @@ function replace_colors(config) {
     }
 }
 
-Pebble.addEventListener('ready', function() {
-    // window.localStorage.removeItem("config_4pop");
-    var config = JSON.parse(window.localStorage.getItem("config_4pop"));
-    if (config) {
-        var changed = false;
-        for (var key in defaults) {
-            if (!config[key]) {
-                changed = true;
-                config[key] = defaults[key];
-            }
-        }
-        if (changed) {
-            window.localStorage.setItem("config_4pop", JSON.stringify(config));
-        }
-    } else {
-        window.localStorage.setItem("config_4pop", JSON.stringify(defaults));
-    }
-});
-
 Pebble.addEventListener('showConfiguration', function () {
-    Pebble.openURL('data:text/html,' + encodeURIComponent(config_html.replace("INSERT_SETTINGS_HERE", window.localStorage.getItem("config_4pop")).replace("INSERT_VERSION_HERE", appinfo.versionLabel) + '<!--.html'));
+    Pebble.openURL('https://rawgit.com/frogamic/4pop/master/config/config.html?version=' + appinfo.versionLabel);
 });
 
 Pebble.addEventListener('webviewclosed', function(e) {

@@ -2,8 +2,6 @@
 
 APPINFO_VAR="appinfo"
 APPINFO="appinfo.json"
-HTML_VAR="config_html"
-SOURCE_HTML="config/config.html"
 SOURCE_JS="config/config.js"
 DESTINATION_DIR="src/js/"
 DESTINATION_JS="pebble-js-app.js"
@@ -16,8 +14,6 @@ mkdir -p $DESTINATION_DIR
 echo $COMMENT > $DESTINATION_DIR$DESTINATION_JS
 # Append the appinfo file to the js
 echo var $APPINFO_VAR = $(cat $APPINFO)\; >> $DESTINATION_DIR$DESTINATION_JS
-# Append the escaped HTML to the file.
-echo var $HTML_VAR = \"$(sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' -e 's/^\s*//' -e 's/$/\\n/' $SOURCE_HTML | tr -d "\n")\"\; >> $DESTINATION_DIR$DESTINATION_JS
 # Append the rest of the JS to the file.
 cat $SOURCE_JS >> $DESTINATION_DIR$DESTINATION_JS
 

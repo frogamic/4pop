@@ -49,7 +49,7 @@
             var nColors = 64;
             var nExt = 2;
             var colors = ["bluetooth", "battery", "#000", "#005", "#00a", "#00f", "#050", "#055", "#05a", "#05f", "#0a0", "#0a5", "#0aa", "#0af", "#0f0", "#0f5", "#0fa", "#0ff", "#500", "#505", "#50a", "#50f", "#550", "#555", "#55a", "#55f", "#5a0", "#5a5", "#5aa", "#5af", "#5f0", "#5f5", "#5fa", "#5ff", "#a00", "#a05", "#a0a", "#a0f", "#a50", "#a55", "#a5a", "#a5f", "#aa0", "#aa5", "#aaa", "#aaf", "#af0", "#af5", "#afa", "#aff", "#f00", "#f05", "#f0a", "#f0f", "#f50", "#f55", "#f5a", "#f5f", "#fa0", "#fa5", "#faa", "#faf", "#ff0", "#ff5", "#ffa", "#fff"];
-            var settings = INSERT_SETTINGS_HERE;
+            var settings = {'tlb':'#00f','trb':'#f0f','blb':'#fa0','brb':'bluetooth','tld':'#f50','trd':'#ff0','bld':'#f00','brd':'battery','tlh':'#fff','trh':'#fff','blh':'#fff','brh':'#fff','vibe':1};
             var chosenColor;
             var extitems = [];
             var colorpicker = document.createElement("div");
@@ -94,6 +94,9 @@
             }
             function send_settings() {
                 settings.vibe = document.getElementById("vibe").checked;
+                for (var key in settings) {
+                    window.localStorage.setItem("config_4pop_"+key, settings[key]);
+                }
                 document.location = "pebblejs://close#" + encodeURIComponent(JSON.stringify(settings));
             }
             function select_color() {
@@ -168,6 +171,12 @@
                 }
             }
             window.onload = function() {
+                for (var key in settings) {
+                    var val = window.localStorage.getItem("config_4pop_"+key);
+                    if (val) {
+                        settings[key] = val;
+                    }
+                }
                 document.body.appendChild(colorpicker);
                 for (var id in settings) {
                     var i = document.getElementById(id);
@@ -181,6 +190,9 @@
                         draw_canvas(i);
                     }
                 }
+                var ver = document.createElement('p');
+                ver.innerHTML = "4pop version " + window.location.search.match(/version=(\d*\.\d*)/)[1];
+                document.body.appendChild(ver);
             };
         </script>
     </head>
@@ -212,6 +224,5 @@
             <button type="submit" onclick="send_settings();">Save</button>
             <button type="cancel" onclick="document.location = 'pebblejs://close#cancel'">Cancel</button>
         </p>
-        4pop version INSERT_VERSION_HERE
     </body>
 </html>
